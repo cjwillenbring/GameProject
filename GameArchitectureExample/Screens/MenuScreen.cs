@@ -41,7 +41,7 @@ namespace GameArchitectureExample.Screens
                 new[] { Keys.Enter, Keys.Space }, true);
             _menuCancel = new InputAction(
                 new[] { Buttons.B, Buttons.Back },
-                new[] { Keys.Back }, true);
+                new[] { Keys.Back, Keys.Escape }, true);
         }
 
         // Responds to user input, changing the selected entry and accepting or cancelling the menu.

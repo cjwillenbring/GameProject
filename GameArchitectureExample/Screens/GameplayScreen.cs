@@ -31,7 +31,7 @@ namespace GameArchitectureExample.Screens
 
             _pauseAction = new InputAction(
                 new[] { Buttons.Start, Buttons.Back },
-                new[] { Keys.Back }, true);
+                new[] { Keys.Back, Keys.Escape }, true);
         }
 
         // Load graphics content for the game
