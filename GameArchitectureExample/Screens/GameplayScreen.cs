@@ -5,6 +5,10 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using GameArchitectureExample.StateManagement;
+using GameArchitectureExample.GamePlay;
+using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Media;
+using System.Collections.Generic;
 
 namespace GameArchitectureExample.Screens
 {
@@ -14,12 +18,38 @@ namespace GameArchitectureExample.Screens
     public class GameplayScreen : GameScreen
     {
         private ContentManager _content;
-        private SpriteFont _gameFont;
 
-        private Vector2 _playerPosition = new Vector2(100, 100);
-        private Vector2 _enemyPosition = new Vector2(100, 100);
+        // Player Sprites
+        private PlayerSprite player;
+        private List<FallingItem> fallingItems;
+        private ChestSprite chestSprite;
 
-        private readonly Random _random = new Random();
+        // Platform Sprite
+        private List<PlatformSprite> platforms;
+
+        // Textures
+        private Texture2D humble_atlas;
+        private Texture2D colored_pack_atlas;
+        private Texture2D ball;
+        private Texture2D background_texture;
+        private Texture2D coin;
+
+        // Sound Effects and Music
+        private Song song;
+        private SoundEffect coinPickupSound;
+        private SoundEffect bombCoinPickupSound;
+        private SoundEffect explosionSound;
+
+        // Fonts
+        private SpriteFont bangers;
+
+        // Game properties/mechanics
+        private int best;
+        private int currentScore;
+        private double countdownTimer;
+        private double gameOverTimer;
+
+        private readonly Random random;
 
         private float _pauseAlpha;
         private readonly InputAction _pauseAction;
@@ -32,6 +62,38 @@ namespace GameArchitectureExample.Screens
             _pauseAction = new InputAction(
                 new[] { Buttons.Start, Buttons.Back },
                 new[] { Keys.Back, Keys.Escape }, true);
+
+            // add in player and chest sprites
+            player = new PlayerSprite();
+            chestSprite = new ChestSprite();
+
+            // Add countdown timer and reset score
+            currentScore = 0;
+            countdownTimer = 60;
+            gameOverTimer = 0;
+
+
+            // initialize the falling items list
+            fallingItems = new List<FallingItem>() { };
+
+            // initialize platform list and populate with static method
+            platforms = new List<PlatformSprite>();
+            PlatformBuilder.GeneratePlatforms(platforms);
+
+            // initialize the random object
+            random = new Random();
+        }
+
+        /// <summary>
+        /// Reset the gameplay screen
+        /// </summary>
+        private void Reset()
+        {
+            countdownTimer = 60;
+            currentScore = 0;
+            fallingItems = new List<FallingItem>() { };
+            gameOverTimer = 0;
+            player.GameOver = false;
         }
 
         // Load graphics content for the game
@@ -40,9 +102,34 @@ namespace GameArchitectureExample.Screens
             if (_content == null)
                 _content = new ContentManager(ScreenManager.Game.Services, "Content");
 
-            _gameFont = _content.Load<SpriteFont>("bangers");
 
-            // Load in fonts here
+            // register the viewport width with the falling items class
+            FallingItem.RegisterViewportWidth(ScreenManager.GraphicsDevice.Viewport.Width);
+
+            // TODO: use this.Content to load your game content here
+            // Loads player content, textures, etc
+            player.LoadContent(_content);
+
+            // Load textures
+            chestSprite.LoadContent(_content);
+            humble_atlas = _content.Load<Texture2D>("humble-item-pack");
+            ball = _content.Load<Texture2D>("basketball");
+            background_texture = _content.Load<Texture2D>("ground");
+            coin = _content.Load<Texture2D>("coin-sparkle");
+            colored_pack_atlas = _content.Load<Texture2D>("colored_packed");
+
+            // Load Sound Effects and Music
+            song = _content.Load<Song>("Sabae-Sunrise");
+            explosionSound = _content.Load<SoundEffect>("Explosion");
+            coinPickupSound = _content.Load<SoundEffect>("Pickup_Coin");
+            bombCoinPickupSound = _content.Load<SoundEffect>("Bomb_Coin");
+
+            // Load fonts
+            bangers = _content.Load<SpriteFont>("bangers");
+
+            MediaPlayer.IsRepeating = true;
+            MediaPlayer.Volume = .2f;
+            MediaPlayer.Play(song);
 
             // once the load has finished, we use ResetElapsedTime to tell the game's
             // timing mechanism that we have just finished a very long frame, and that
@@ -75,21 +162,74 @@ namespace GameArchitectureExample.Screens
 
             if (IsActive)
             {
-                // Apply some random jitter to make the enemy move around.
-                const float randomization = 10;
+                if (random.NextDouble() > .975) fallingItems.Add(new Bomb());
+                if (random.NextDouble() > .975) fallingItems.Add(new Coin());
+                double t = gameTime.ElapsedGameTime.TotalSeconds;
+                countdownTimer -= t;
+                if (gameOverTimer > 0) gameOverTimer -= t;
+                else if (gameOverTimer < 0) Reset();
+                if (countdownTimer < 0) Reset();
 
-                _enemyPosition.X += (float)(_random.NextDouble() - 0.5) * randomization;
-                _enemyPosition.Y += (float)(_random.NextDouble() - 0.5) * randomization;
+                // TODO: Add your update logic here
+                player.Update(gameTime, ScreenManager.GraphicsDevice.Viewport.Width, platforms);
 
-                // Apply a stabilizing force to stop the enemy moving off the screen.
-                var targetPosition = new Vector2(
-                    ScreenManager.GraphicsDevice.Viewport.Width / 2 - _gameFont.MeasureString("Insert Gameplay Here").X / 2,
-                    200);
+                // Move through list of falling objects and get which ones have passed the bottom of the screen
+                List<FallingItem> toRemove = new List<FallingItem>();
+                foreach (var fallingItem in fallingItems)
+                {
+                    fallingItem.Update(gameTime);
+                    if (fallingItem.Position.Y > ScreenManager.GraphicsDevice.Viewport.Height)
+                    {
+                        toRemove.Add(fallingItem);
+                    }
+                    best = Math.Max(best, currentScore);
+                }
 
-                _enemyPosition = Vector2.Lerp(_enemyPosition, targetPosition, 0.05f);
+                // Set the player color to be white
+                player.Color = Color.White;
 
-                // This game isn't very fun! You could probably improve
-                // it by inserting something more interesting in this space :-)
+                // Loop through falling items and look for collisions
+                foreach (var item in fallingItems)
+                {
+                    if (item.Bounds.CollidesWith(player.Bounds))
+                    {
+                        player.Color = Color.Red;
+                        item.HasCollided = true;
+                        toRemove.Add(item);
+                        // Add score logic here
+                        if (item is Coin)
+                        {
+                            chestSprite.ChestState = ChestState.Open;
+                            currentScore++;
+                            coinPickupSound.Play(.2f, 0, 0);
+                        }
+                        else if (item is Bomb)
+                        {
+                            if (random.NextDouble() > .75)
+                            {
+                                for (int i = 0; i < 3; i++) bombCoinPickupSound.Play(.1f, 0, 0);
+                                chestSprite.ChestState = ChestState.Open;
+                                currentScore += 5;
+                            }
+                            else
+                            {
+                                explosionSound.Play(.1f, 1, 0);
+                                currentScore -= 5;
+                            }
+                            if (currentScore < 0 && gameOverTimer == 0)
+                            {
+                                explosionSound.Play(.3f, 0, 0);
+                                gameOverTimer = 1.2;
+                                player.GameOver = true;
+                                foreach (var f in fallingItems) toRemove.Add(f);
+                            }
+                        }
+                    }
+                }
+
+                // Remove the items that have clipped through the bottom of the game
+                foreach (var item in toRemove)
+                    fallingItems.Remove(item);
             }
         }
 
@@ -116,50 +256,46 @@ namespace GameArchitectureExample.Screens
             {
                 ScreenManager.AddScreen(new PauseMenuScreen(), ControllingPlayer);
             }
-            else
-            {
-                // Otherwise move the player position.
-                var movement = Vector2.Zero;
-
-                if (keyboardState.IsKeyDown(Keys.Left))
-                    movement.X--;
-
-                if (keyboardState.IsKeyDown(Keys.Right))
-                    movement.X++;
-
-                if (keyboardState.IsKeyDown(Keys.Up))
-                    movement.Y--;
-
-                if (keyboardState.IsKeyDown(Keys.Down))
-                    movement.Y++;
-
-                var thumbstick = gamePadState.ThumbSticks.Left;
-
-                movement.X += thumbstick.X;
-                movement.Y -= thumbstick.Y;
-
-                if (movement.Length() > 1)
-                    movement.Normalize();
-
-                _playerPosition += movement * 8f;
-            }
         }
 
         public override void Draw(GameTime gameTime)
         {
             // This game has a blue background. Why? Because!
-            ScreenManager.GraphicsDevice.Clear(ClearOptions.Target, Color.CornflowerBlue, 0, 0);
+            ScreenManager.GraphicsDevice.Clear(ClearOptions.Target, Color.DarkSlateGray, 0, 0);
 
             // Our player and enemy are both actually just text strings.
             var spriteBatch = ScreenManager.SpriteBatch;
 
+            // TODO: Add your drawing code here
             spriteBatch.Begin();
 
-            spriteBatch.DrawString(_gameFont, "// TODO", _playerPosition, Color.Green);
-            spriteBatch.DrawString(_gameFont, "Insert Gameplay Here",
-                                   _enemyPosition, Color.DarkRed);
+            // Draw the background texture first since it should have the lowest z value and be rendered in the back
+            spriteBatch.Draw(background_texture, new Rectangle(0, 0, ScreenManager.GraphicsDevice.Viewport.Width, ScreenManager.GraphicsDevice.Viewport.Height), Color.White);
 
+            foreach (var item in fallingItems)
+            {
+                // think about making atlas more dynamic, but for now handle with if else
+                if (item is Bomb b)
+                    b.Draw(gameTime, spriteBatch, humble_atlas);
+                else if (item is Coin c)
+                    c.Draw(gameTime, spriteBatch, coin);
+            }
+
+            foreach (var platform in platforms)
+            {
+                platform.Draw(gameTime, spriteBatch, colored_pack_atlas);
+            }
+
+            player.Draw(gameTime, spriteBatch);
+            chestSprite.Draw(gameTime, spriteBatch);
+            // Render text, measure widths first to get more precise placement
+            Vector2 widthScore = bangers.MeasureString($"Current Score : {currentScore}");
+            Vector2 widthBest = bangers.MeasureString($"Best : {best}");
+            spriteBatch.DrawString(bangers, $"Time Left : {countdownTimer:F}", new Vector2(5, 5), Color.Black);
+            spriteBatch.DrawString(bangers, $"Current Score : {Math.Max(currentScore, 0)}", new Vector2(800 - (widthScore.X + 5), 5), Color.Black);
+            spriteBatch.DrawString(bangers, $"Best : {best}", new Vector2(800 - (widthBest.X + 5), 45), Color.Black);
             spriteBatch.End();
+
 
             // If the game is transitioning on or off, fade it out to black.
             if (TransitionPosition > 0 || _pauseAlpha > 0)
