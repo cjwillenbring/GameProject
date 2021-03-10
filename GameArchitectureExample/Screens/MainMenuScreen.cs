@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using GameArchitectureExample.StateManagement;
+using GameArchitectureExample.GamePlay;
 
 namespace GameArchitectureExample.Screens
 {
@@ -23,7 +24,7 @@ namespace GameArchitectureExample.Screens
 
         private void PlayGameMenuEntrySelected(object sender, PlayerIndexEventArgs e)
         {
-            LoadingScreen.Load(ScreenManager, true, e.PlayerIndex, new GameplayScreen(), new CutSceneScreen());
+            LoadingScreen.Load(ScreenManager, true, e.PlayerIndex, new GameplayScreen());
         }
 
         private void OptionsMenuEntrySelected(object sender, PlayerIndexEventArgs e)
