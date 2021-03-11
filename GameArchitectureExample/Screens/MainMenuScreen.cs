@@ -10,8 +10,8 @@ namespace GameArchitectureExample.Screens
         public MainMenuScreen() : base("Main Menu")
         {
             var playGameMenuEntry = new MenuEntry("Play Game");
-            var optionsMenuEntry = new MenuEntry("Options");
-            var exitMenuEntry = new MenuEntry("Exit");
+            var optionsMenuEntry = new MenuEntry("Sound Settings");
+            var exitMenuEntry = new MenuEntry("Restart Game");
 
             playGameMenuEntry.Selected += PlayGameMenuEntrySelected;
             optionsMenuEntry.Selected += OptionsMenuEntrySelected;
@@ -24,7 +24,19 @@ namespace GameArchitectureExample.Screens
 
         private void PlayGameMenuEntrySelected(object sender, PlayerIndexEventArgs e)
         {
-            LoadingScreen.Load(ScreenManager, true, e.PlayerIndex, new GameplayScreen());
+            GameplayScreen currentGameScreen = null;
+            foreach (var gs in ScreenManager.GetScreens())
+            {
+                if (gs is GameplayScreen g)
+                {
+                    currentGameScreen = g;
+                    break;
+                }
+            }
+            if (currentGameScreen == null)
+                LoadingScreen.Load(ScreenManager, true, e.PlayerIndex, new GameplayScreen());
+            else
+                LoadingScreen.Load(ScreenManager, false, e.PlayerIndex, currentGameScreen);
         }
 
         private void OptionsMenuEntrySelected(object sender, PlayerIndexEventArgs e)
@@ -34,7 +46,7 @@ namespace GameArchitectureExample.Screens
 
         protected override void OnCancel(PlayerIndex playerIndex)
         {
-            const string message = "Are you sure you want to exit this sample?";
+            const string message = "Are you sure you want to restart the game?";
             var confirmExitMessageBox = new MessageBoxScreen(message);
 
             confirmExitMessageBox.Accepted += ConfirmExitMessageBoxAccepted;
@@ -44,7 +56,13 @@ namespace GameArchitectureExample.Screens
 
         private void ConfirmExitMessageBoxAccepted(object sender, PlayerIndexEventArgs e)
         {
-            ScreenManager.Game.Exit();
+            GameScreen[] gameScreens = ScreenManager.GetScreens();
+            foreach(var screen in gameScreens)
+            {
+                ScreenManager.RemoveScreen(screen);
+            }
+            ScreenManager.AddScreen(new BackgroundScreen(), null);
+            ScreenManager.AddScreen(new MainMenuScreen(), null);
         }
     }
 }

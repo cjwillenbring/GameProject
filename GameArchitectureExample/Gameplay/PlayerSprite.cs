@@ -103,6 +103,16 @@ namespace GameArchitectureExample.GamePlay
         private SoundEffect jumpSound;
 
         /// <summary>
+        /// Reset the player's position, velocity, etc.
+        /// </summary>
+        public void Reset()
+        {
+            speed = new Vector2(150, 150);
+            position = new Vector2(300, 380);
+            bounds = new BoundingRectangle(300, 460, 38, 48);
+        }
+
+        /// <summary>
         /// Loads the sprite texture using the provided ContentManager
         /// </summary>
         /// <param name="content">The ContentManager to load with</param>

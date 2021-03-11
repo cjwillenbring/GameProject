@@ -31,7 +31,20 @@ namespace GameArchitectureExample.Screens
         // This uses the loading screen to transition from the game back to the main menu screen.
         private void ConfirmQuitMessageBoxAccepted(object sender, PlayerIndexEventArgs e)
         {
-            LoadingScreen.Load(ScreenManager, false, null, new BackgroundScreen(), new MainMenuScreen());
+            // persist state across quits
+            GameplayScreen currentGameScreen = null;
+            foreach(var gs in ScreenManager.GetScreens())
+            {
+                if (gs is GameplayScreen g)
+                {
+                    currentGameScreen = g;
+                    break;
+                }
+            }
+            if(currentGameScreen == null)
+                LoadingScreen.Load(ScreenManager, false, null, new BackgroundScreen(), new MainMenuScreen());
+            else
+                LoadingScreen.Load(ScreenManager, false, null, currentGameScreen, new BackgroundScreen(), new MainMenuScreen());
         }
     }
 }

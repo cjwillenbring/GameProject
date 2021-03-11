@@ -94,6 +94,7 @@ namespace GameArchitectureExample.Screens
             fallingItems = new List<FallingItem>() { };
             gameOverTimer = 0;
             player.GameOver = false;
+            player.Reset();
         }
 
         // Load graphics content for the game
@@ -126,10 +127,7 @@ namespace GameArchitectureExample.Screens
 
             // Load fonts
             bangers = _content.Load<SpriteFont>("bangers");
-
-            MediaPlayer.IsRepeating = true;
-            MediaPlayer.Volume = .2f;
-            MediaPlayer.Play(song);
+            Reset();
 
             // once the load has finished, we use ResetElapsedTime to tell the game's
             // timing mechanism that we have just finished a very long frame, and that
