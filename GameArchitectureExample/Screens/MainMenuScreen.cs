@@ -41,7 +41,7 @@ namespace GameArchitectureExample.Screens
 
         private void OptionsMenuEntrySelected(object sender, PlayerIndexEventArgs e)
         {
-            ScreenManager.AddScreen(new OptionsMenuScreen(), e.PlayerIndex);
+            ScreenManager.AddScreen(new SoundOptionsMenuScreen(), e.PlayerIndex);
         }
 
         protected override void OnCancel(PlayerIndex playerIndex)
