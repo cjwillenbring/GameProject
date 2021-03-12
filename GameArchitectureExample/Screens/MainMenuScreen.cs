@@ -1,4 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Media;
 using GameArchitectureExample.StateManagement;
 using GameArchitectureExample.GamePlay;
 
@@ -63,6 +65,9 @@ namespace GameArchitectureExample.Screens
             }
             ScreenManager.AddScreen(new BackgroundScreen(), null);
             ScreenManager.AddScreen(new MainMenuScreen(), null);
+            ScreenManager.AddScreen(new SplashScreen(), null);
+            MediaPlayer.Volume = 1;
+            SoundEffect.MasterVolume = 1;
         }
     }
 }

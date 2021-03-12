@@ -35,7 +35,6 @@ namespace GameArchitectureExample.Screens
         private Texture2D coin;
 
         // Sound Effects and Music
-        private Song song;
         private SoundEffect coinPickupSound;
         private SoundEffect bombCoinPickupSound;
         private SoundEffect explosionSound;
@@ -120,7 +119,6 @@ namespace GameArchitectureExample.Screens
             colored_pack_atlas = _content.Load<Texture2D>("colored_packed");
 
             // Load Sound Effects and Music
-            song = _content.Load<Song>("Sabae-Sunrise");
             explosionSound = _content.Load<SoundEffect>("Explosion");
             coinPickupSound = _content.Load<SoundEffect>("Pickup_Coin");
             bombCoinPickupSound = _content.Load<SoundEffect>("Bomb_Coin");
@@ -128,7 +126,6 @@ namespace GameArchitectureExample.Screens
             // Load fonts
             bangers = _content.Load<SpriteFont>("bangers");
             Reset();
-
             // once the load has finished, we use ResetElapsedTime to tell the game's
             // timing mechanism that we have just finished a very long frame, and that
             // it should not try to catch up.

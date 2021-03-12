@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using GameArchitectureExample.Screens;
 using GameArchitectureExample.StateManagement;
+using Microsoft.Xna.Framework.Media;
 
 namespace GameArchitectureExample
 {
@@ -14,7 +15,7 @@ namespace GameArchitectureExample
     {
         private GraphicsDeviceManager _graphics;
         private readonly ScreenManager _screenManager;
-        
+
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -34,7 +35,7 @@ namespace GameArchitectureExample
         {
             _screenManager.AddScreen(new BackgroundScreen(), null);
             _screenManager.AddScreen(new MainMenuScreen(), null);
-            // _screenManager.AddScreen(new SplashScreen(), null);
+            _screenManager.AddScreen(new SplashScreen(), null);
         }
 
         protected override void Initialize()

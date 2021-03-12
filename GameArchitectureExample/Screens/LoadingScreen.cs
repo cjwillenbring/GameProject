@@ -1,6 +1,8 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using GameArchitectureExample.StateManagement;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Content;
 
 namespace GameArchitectureExample.Screens
 {
@@ -21,6 +23,7 @@ namespace GameArchitectureExample.Screens
         private readonly bool _loadingIsSlow;
         private bool _otherScreensAreGone;
         private readonly GameScreen[] _screensToLoad;
+        Texture2D _background;
 
         // Constructor is private: loading screens should be activated via the static Load method instead.
         private LoadingScreen(ScreenManager screenManager, bool loadingIsSlow, GameScreen[] screensToLoad)
@@ -29,6 +32,12 @@ namespace GameArchitectureExample.Screens
             _screensToLoad = screensToLoad;
 
             TransitionOnTime = TimeSpan.FromSeconds(0.5);
+        }
+
+        public override void Activate()
+        {
+            _background = new ContentManager(ScreenManager.Game.Services, "Content").Load<Texture2D>("splash_sky");
+            base.Activate();
         }
 
         // Activates the loading screen.
@@ -97,10 +106,11 @@ namespace GameArchitectureExample.Screens
                 var textSize = font.MeasureString(message);
                 var textPosition = (viewportSize - textSize) / 2;
 
-                var color = Color.White * TransitionAlpha;
+                var color = Color.Black * TransitionAlpha;
 
                 // Draw the text.
                 spriteBatch.Begin();
+                ScreenManager.SpriteBatch.Draw(_background, Vector2.Zero, Color.White * TransitionAlpha);
                 spriteBatch.DrawString(font, message, textPosition, color);
                 spriteBatch.End();
             }

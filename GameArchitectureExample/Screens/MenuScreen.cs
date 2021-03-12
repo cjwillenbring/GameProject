@@ -4,6 +4,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using GameArchitectureExample.StateManagement;
+using Microsoft.Xna.Framework.Media;
+using Microsoft.Xna.Framework.Content;
 
 namespace GameArchitectureExample.Screens
 {
@@ -42,6 +44,12 @@ namespace GameArchitectureExample.Screens
             _menuCancel = new InputAction(
                 new[] { Buttons.B, Buttons.Back },
                 new[] { Keys.Back, Keys.Escape }, true);
+
+        }
+
+        public override void Activate()
+        {
+            base.Activate();
         }
 
         // Responds to user input, changing the selected entry and accepting or cancelling the menu.
@@ -166,7 +174,7 @@ namespace GameArchitectureExample.Screens
 
             titlePosition.Y -= transitionOffset * 100;
 
-            spriteBatch.DrawString(font, _menuTitle, titlePosition, titleColor,
+            spriteBatch.DrawString(font, _menuTitle, titlePosition, Color.Black,
                 0, titleOrigin, titleScale, SpriteEffects.None, 0);
 
             spriteBatch.End();
