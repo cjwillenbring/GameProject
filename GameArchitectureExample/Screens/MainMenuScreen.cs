@@ -13,15 +13,18 @@ namespace GameArchitectureExample.Screens
         {
             var playGameMenuEntry = new MenuEntry("Play Game");
             var optionsMenuEntry = new MenuEntry("Sound Settings");
-            var exitMenuEntry = new MenuEntry("Restart Game");
+            var exitMenuEntry = new MenuEntry("Restart Game"); 
+            var quitMenuEntry = new MenuEntry("Quit");
 
             playGameMenuEntry.Selected += PlayGameMenuEntrySelected;
             optionsMenuEntry.Selected += OptionsMenuEntrySelected;
             exitMenuEntry.Selected += OnCancel;
+            quitMenuEntry.Selected += OnQuit;
 
             MenuEntries.Add(playGameMenuEntry);
             MenuEntries.Add(optionsMenuEntry);
             MenuEntries.Add(exitMenuEntry);
+            MenuEntries.Add(quitMenuEntry);
         }
 
         private void PlayGameMenuEntrySelected(object sender, PlayerIndexEventArgs e)
@@ -38,7 +41,7 @@ namespace GameArchitectureExample.Screens
             if (currentGameScreen == null)
                 LoadingScreen.Load(ScreenManager, true, e.PlayerIndex, new GameplayScreen());
             else
-                LoadingScreen.Load(ScreenManager, false, e.PlayerIndex, currentGameScreen);
+                LoadingScreen.Load(ScreenManager, true, e.PlayerIndex, currentGameScreen);
         }
 
         private void OptionsMenuEntrySelected(object sender, PlayerIndexEventArgs e)
@@ -68,6 +71,21 @@ namespace GameArchitectureExample.Screens
             ScreenManager.AddScreen(new SplashScreen(), null);
             MediaPlayer.Volume = 1;
             SoundEffect.MasterVolume = 1;
+        }
+
+        private void OnQuit(object sender, PlayerIndexEventArgs e)
+        {
+            const string message = "Are you sure you want to quit the game?";
+            var confirmExitMessageBox = new MessageBoxScreen(message);
+
+            confirmExitMessageBox.Accepted += OnQuitMessageAccepted;
+
+            ScreenManager.AddScreen(confirmExitMessageBox, e.PlayerIndex);
+        }
+
+        private void OnQuitMessageAccepted(object sender, PlayerIndexEventArgs e)
+        {
+            ScreenManager.Game.Exit();
         }
     }
 }

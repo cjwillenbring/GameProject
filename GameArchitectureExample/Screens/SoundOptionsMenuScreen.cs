@@ -16,12 +16,15 @@ namespace GameArchitectureExample.Screens
         private readonly MenuEntry _mediaPlayerVolumeDownMenuEntry;
         private readonly MenuEntry _mediaPlayerVolumeUpMenuEntry;
 
-        private static float _currentMasterVolumeSetting = SoundEffect.MasterVolume;
-        private static float _currentMediaVolumeSetting = MediaPlayer.Volume;
+        private static float _currentMasterVolumeSetting;
+        private static float _currentMediaVolumeSetting;
 
 
         public SoundOptionsMenuScreen() : base("Options")
         {
+            _currentMasterVolumeSetting = SoundEffect.MasterVolume;
+            _currentMediaVolumeSetting = MediaPlayer.Volume;
+
             _currentMasterVolumeMenuEntry = new MenuEntry(string.Empty);
             _currentMediaVolumeMenuEntry = new MenuEntry(string.Empty);
 

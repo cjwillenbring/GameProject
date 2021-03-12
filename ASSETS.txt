@@ -25,3 +25,5 @@ Content/ground.png - created by Bevoulin on OpenGameArt.org (https://opengameart
 Conten/Bomb_Coin.wave && Content/Jump.wav && Content/Explosion.wav && Content/Pickup_Coin.wav created by Cole Willenbring and released under public domain
 
 Content/Sabae-Sunrise.mp3 - created by Fabian Measures on FreeMusicArchive.org (https://freemusicarchive.org/music/Fabian_Measures/Singles_Album/Sabae_Sunrise) and released under Creative Commons Attribution 4.0 International
+
+Content/splash_sky.png - created by bevouliin.com on OpenGameArt.Org (https://opengameart.org/content/bevouliin-free-beach-game-background-for-game-developers) and released under public domain

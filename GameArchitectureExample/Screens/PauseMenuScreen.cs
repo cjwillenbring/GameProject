@@ -9,7 +9,7 @@ namespace GameArchitectureExample.Screens
         public PauseMenuScreen() : base("Paused")
         {
             var resumeGameMenuEntry = new MenuEntry("Resume Game");
-            var quitGameMenuEntry = new MenuEntry("Quit Game");
+            var quitGameMenuEntry = new MenuEntry("Quit To Main Menu");
 
             resumeGameMenuEntry.Selected += OnCancel;
             quitGameMenuEntry.Selected += QuitGameMenuEntrySelected;
@@ -20,7 +20,7 @@ namespace GameArchitectureExample.Screens
 
         private void QuitGameMenuEntrySelected(object sender, PlayerIndexEventArgs e)
         {
-            const string message = "Are you sure you want to quit this game?";
+            const string message = "Are you sure you want to quit to the main menu?";
             var confirmQuitMessageBox = new MessageBoxScreen(message);
 
             confirmQuitMessageBox.Accepted += ConfirmQuitMessageBoxAccepted;
@@ -42,9 +42,9 @@ namespace GameArchitectureExample.Screens
                 }
             }
             if(currentGameScreen == null)
-                LoadingScreen.Load(ScreenManager, false, null, new BackgroundScreen(), new MainMenuScreen());
+                LoadingScreen.Load(ScreenManager, true, null, new BackgroundScreen(), new MainMenuScreen());
             else
-                LoadingScreen.Load(ScreenManager, false, null, currentGameScreen, new BackgroundScreen(), new MainMenuScreen());
+                LoadingScreen.Load(ScreenManager, true, null, currentGameScreen, new BackgroundScreen(), new MainMenuScreen());
         }
     }
 }

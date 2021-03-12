@@ -7,7 +7,6 @@ using Microsoft.Xna.Framework.Input;
 using GameArchitectureExample.StateManagement;
 using GameArchitectureExample.GamePlay;
 using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Media;
 using System.Collections.Generic;
 
 namespace GameArchitectureExample.Screens
@@ -157,10 +156,10 @@ namespace GameArchitectureExample.Screens
 
             if (IsActive)
             {
-                if (random.NextDouble() > .975) fallingItems.Add(new Bomb());
-                if (random.NextDouble() > .975) fallingItems.Add(new Coin());
+                if (random.NextDouble() > .975 && gameOverTimer == 0) fallingItems.Add(new Bomb());
+                if (random.NextDouble() > .975 && gameOverTimer == 0) fallingItems.Add(new Coin());
                 double t = gameTime.ElapsedGameTime.TotalSeconds;
-                countdownTimer -= t;
+                if (gameOverTimer == 0) countdownTimer -= t;
                 if (gameOverTimer > 0) gameOverTimer -= t;
                 else if (gameOverTimer < 0) Reset();
                 if (countdownTimer < 0) Reset();
@@ -286,9 +285,11 @@ namespace GameArchitectureExample.Screens
             // Render text, measure widths first to get more precise placement
             Vector2 widthScore = bangers.MeasureString($"Current Score : {currentScore}");
             Vector2 widthBest = bangers.MeasureString($"Best : {best}");
+            Vector2 widthPause = bangers.MeasureString($"Press Esc to Pause");
             spriteBatch.DrawString(bangers, $"Time Left : {countdownTimer:F}", new Vector2(5, 5), Color.Black);
             spriteBatch.DrawString(bangers, $"Current Score : {Math.Max(currentScore, 0)}", new Vector2(800 - (widthScore.X + 5), 5), Color.Black);
             spriteBatch.DrawString(bangers, $"Best : {best}", new Vector2(800 - (widthBest.X + 5), 45), Color.Black);
+            spriteBatch.DrawString(bangers, $"Press Esc to Pause", new Vector2(800 - (widthPause.X + 5), 430), Color.White);
             spriteBatch.End();
 
 

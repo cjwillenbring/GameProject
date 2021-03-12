@@ -211,6 +211,11 @@ namespace GameArchitectureExample.GamePlay
                 OnPlatform = true;
             }
 
+            if (GameOver)
+            {
+                distanceTraveled.Y = 0;
+                distanceTraveled.X = 0;
+            }
             position += distanceTraveled;
             if (GameOver) Direction = Direction.Death;
             bounds.X = position.X;
