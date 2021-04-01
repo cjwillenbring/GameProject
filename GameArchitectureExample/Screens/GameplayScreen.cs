@@ -50,6 +50,9 @@ namespace GameArchitectureExample.Screens
         // Matrix transforms
         private bool _shaking;
         private float _shakeTime;
+        private float _zoom;
+        private float _zoomTime;
+        private bool _zooming;
 
         private readonly Random random;
 
@@ -84,6 +87,9 @@ namespace GameArchitectureExample.Screens
             // transform
             _shaking = true;
             _shakeTime = 0;
+            _zoom = 2f;
+            _zoomTime = 0;
+            _zooming = true;
 
             // initialize the random object
             random = new Random();
@@ -132,6 +138,9 @@ namespace GameArchitectureExample.Screens
             // Load fonts
             bangers = _content.Load<SpriteFont>("bangers");
             Reset();
+
+            _zoom = 2f;
+            _zooming = true;
             // once the load has finished, we use ResetElapsedTime to tell the game's
             // timing mechanism that we have just finished a very long frame, and that
             // it should not try to catch up.
@@ -206,19 +215,12 @@ namespace GameArchitectureExample.Screens
                         }
                         else if (item is Bomb)
                         {
-                            if (random.NextDouble() > .75)
-                            {
-                                for (int i = 0; i < 3; i++) bombCoinPickupSound.Play(.1f, 0, 0);
-                                chestSprite.ChestState = ChestState.Open;
-                                currentScore += 5;
-                            }
-                            else
-                            {
-                                explosionSound.Play(.1f, 1, 0);
-                                currentScore -= 5;
-                            }
+                            explosionSound.Play(.1f, 1, 0);
+                            currentScore -= 5;
                             if (currentScore < 0 && gameOverTimer == 0)
                             {
+                                _shaking = true;
+                                _shakeTime = 0;
                                 explosionSound.Play(.3f, 0, 0);
                                 gameOverTimer = 1.2;
                                 player.GameOver = true;
@@ -261,12 +263,26 @@ namespace GameArchitectureExample.Screens
 
         public override void Draw(GameTime gameTime)
         {
+            Matrix zoomTranslation = Matrix.CreateTranslation(-640 / 2f, -480 / 2f, 0);
+            if (_zooming)
+            {
+                _zoomTime += (float)gameTime.ElapsedGameTime.TotalMilliseconds;
+                _zoom -= .05f;
+                if (_zoom <= 1)
+                {
+                    _zooming = false;
+                    _zoom = 1f;
+                }
+            }
+            Matrix zoomScale = Matrix.CreateScale(_zoom);
+            Matrix zoomTransform = zoomTranslation * zoomScale * Matrix.Invert(zoomTranslation);
+
             Matrix shakeTransform = Matrix.Identity;
             if (_shaking)
             {
                 _shakeTime += (float)gameTime.ElapsedGameTime.TotalMilliseconds;
-                shakeTransform = Matrix.CreateTranslation(10 * MathF.Sin(_shakeTime), 10 * MathF.Cos(_shakeTime), 0);
-                if (_shakeTime > 750) _shaking = false;
+                shakeTransform = Matrix.CreateTranslation((20*_shakeTime / 1000) * MathF.Sin(_shakeTime), 10 * MathF.Cos(_shakeTime), 0);
+                if (_shakeTime >= 1000) _shaking = false;
             }
             // This game has a blue background. Why? Because!
             ScreenManager.GraphicsDevice.Clear(ClearOptions.Target, Color.DarkSlateGray, 0, 0);
@@ -275,10 +291,15 @@ namespace GameArchitectureExample.Screens
             var spriteBatch = ScreenManager.SpriteBatch;
 
             // TODO: Add your drawing code here
-            spriteBatch.Begin(transformMatrix: shakeTransform);
+            spriteBatch.Begin(transformMatrix: shakeTransform * zoomTransform, samplerState: SamplerState.PointClamp);
 
             // Draw the background texture first since it should have the lowest z value and be rendered in the back
             spriteBatch.Draw(background_texture, new Rectangle(0, 0, ScreenManager.GraphicsDevice.Viewport.Width, ScreenManager.GraphicsDevice.Viewport.Height), Color.White);
+            
+            foreach (var platform in platforms)
+            {
+                platform.Draw(gameTime, spriteBatch, colored_pack_atlas);
+            }
 
             foreach (var item in fallingItems)
             {
@@ -287,11 +308,6 @@ namespace GameArchitectureExample.Screens
                     b.Draw(gameTime, spriteBatch, humble_atlas);
                 else if (item is Coin c)
                     c.Draw(gameTime, spriteBatch, coin);
-            }
-
-            foreach (var platform in platforms)
-            {
-                platform.Draw(gameTime, spriteBatch, colored_pack_atlas);
             }
 
             player.Draw(gameTime, spriteBatch);
