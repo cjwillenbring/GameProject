@@ -47,6 +47,10 @@ namespace GameArchitectureExample.Screens
         private double countdownTimer;
         private double gameOverTimer;
 
+        // Matrix transforms
+        private bool _shaking;
+        private float _shakeTime;
+
         private readonly Random random;
 
         private float _pauseAlpha;
@@ -70,13 +74,16 @@ namespace GameArchitectureExample.Screens
             countdownTimer = 60;
             gameOverTimer = 0;
 
-
             // initialize the falling items list
             fallingItems = new List<FallingItem>() { };
 
             // initialize platform list and populate with static method
             platforms = new List<PlatformSprite>();
             PlatformBuilder.GeneratePlatforms(platforms);
+
+            // transform
+            _shaking = true;
+            _shakeTime = 0;
 
             // initialize the random object
             random = new Random();
@@ -254,6 +261,13 @@ namespace GameArchitectureExample.Screens
 
         public override void Draw(GameTime gameTime)
         {
+            Matrix shakeTransform = Matrix.Identity;
+            if (_shaking)
+            {
+                _shakeTime += (float)gameTime.ElapsedGameTime.TotalMilliseconds;
+                shakeTransform = Matrix.CreateTranslation(10 * MathF.Sin(_shakeTime), 10 * MathF.Cos(_shakeTime), 0);
+                if (_shakeTime > 750) _shaking = false;
+            }
             // This game has a blue background. Why? Because!
             ScreenManager.GraphicsDevice.Clear(ClearOptions.Target, Color.DarkSlateGray, 0, 0);
 
@@ -261,7 +275,7 @@ namespace GameArchitectureExample.Screens
             var spriteBatch = ScreenManager.SpriteBatch;
 
             // TODO: Add your drawing code here
-            spriteBatch.Begin();
+            spriteBatch.Begin(transformMatrix: shakeTransform);
 
             // Draw the background texture first since it should have the lowest z value and be rendered in the back
             spriteBatch.Draw(background_texture, new Rectangle(0, 0, ScreenManager.GraphicsDevice.Viewport.Width, ScreenManager.GraphicsDevice.Viewport.Height), Color.White);
