@@ -6,27 +6,27 @@ using System.Text;
 
 namespace GameArchitectureExample.ParticleSystem
 {
-    public class ExplosionParticleSystem : ParticleSystem
+    public class DustParticleSystem : ParticleSystem
     {
 
-        public ExplosionParticleSystem(Game game, int maxExplosions) : base(game, maxExplosions * 25)
+        public DustParticleSystem(Game game, int maxDust) : base(game, maxDust * 25)
         {
 
         }
 
         protected override void InitializeConstants()
         {
-            textureFilename = "explosion_particle";
-            minNumParticles = 45;
-            maxNumParticles = 60;
+            textureFilename = "smoke";
+            minNumParticles = 5;
+            maxNumParticles = 10;
 
-            blendState = BlendState.Additive;
+            blendState = BlendState.NonPremultiplied;
             DrawOrder = AdditiveBlendDrawOrder;
         }
 
         protected override void InitializeParticle(ref Particle p, Vector2 where)
         {
-            var velocity = RandomHelper.NextDirection() * RandomHelper.NextFloat(40,200);
+            var velocity = RandomHelper.NextDirection() * RandomHelper.NextFloat(20,80);
 
             var lifetime = RandomHelper.NextFloat(0.5f, 1.0f);
 
@@ -45,12 +45,12 @@ namespace GameArchitectureExample.ParticleSystem
 
             float normalizedLiftime = particle.TimeSinceStart / particle.Lifetime;
 
-            float alpha = 4 * normalizedLiftime * (1 - normalizedLiftime);
-            particle.Color = Color.White * alpha;
-
-            particle.Scale = .3f + .25f * normalizedLiftime;
+            particle.Scale = 1;
         }
 
-        public void PlaceExplosion(Vector2 where) => AddParticles(where);
+        public void PlaceDustCloud(Vector2 where)
+        {
+            AddParticles(where);
+        }
     }
 }

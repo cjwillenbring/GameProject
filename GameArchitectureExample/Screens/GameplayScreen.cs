@@ -42,6 +42,8 @@ namespace GameArchitectureExample.Screens
         // Particle systems
         Dictionary<Bomb, PixieParticleSystem> _bombTrails = new Dictionary<Bomb, PixieParticleSystem>();
         CoinParticleSystem _coinSploshion;
+        ExplosionParticleSystem _explosions;
+        DustParticleSystem _dusts;
 
         // Fonts
         private SpriteFont bangers;
@@ -155,6 +157,12 @@ namespace GameArchitectureExample.Screens
             _coinSploshion = new CoinParticleSystem(ScreenManager.Game, 25);
             ScreenManager.Game.Components.Add(_coinSploshion);
 
+            _explosions = new ExplosionParticleSystem(ScreenManager.Game, 25);
+            ScreenManager.Game.Components.Add(_explosions);
+
+            _dusts = new DustParticleSystem(ScreenManager.Game, 25);
+            ScreenManager.Game.Components.Add(_dusts);
+
             // once the load has finished, we use ResetElapsedTime to tell the game's
             // timing mechanism that we have just finished a very long frame, and that
             // it should not try to catch up.
@@ -202,7 +210,7 @@ namespace GameArchitectureExample.Screens
                 if (countdownTimer < 0) Reset();
 
                 // TODO: Add your update logic here
-                player.Update(gameTime, ScreenManager.GraphicsDevice.Viewport.Width, platforms);
+                player.Update(gameTime, ScreenManager.GraphicsDevice.Viewport.Width, platforms, _dusts);
 
                 // Move through list of falling objects and get which ones have passed the bottom of the screen
                 List<FallingItem> toRemove = new List<FallingItem>();
@@ -234,10 +242,11 @@ namespace GameArchitectureExample.Screens
                             currentScore++;
                             coinPickupSound.Play(.2f, 0, 0);
                         }
-                        else if (item is Bomb)
+                        else if (item is Bomb b)
                         {
                             explosionSound.Play(.2f, 1, 0);
                             currentScore -= 5;
+                            _explosions.PlaceExplosion(b.Position);
                             _coinSploshion.PlaceCoinSploshion(chestSprite.Position);
                             chestSprite.ChestState = ChestState.Open;
                             if (currentScore < 0 && gameOverTimer == 0)

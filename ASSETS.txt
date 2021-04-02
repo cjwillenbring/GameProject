@@ -31,3 +31,7 @@ Content/splash_sky.png - created by bevouliin.com on OpenGameArt.Org (https://op
 Content/particle.png created by Nathan Bean and released under public domain
 
 Content/coin.png - created by Jan Schneider on itch.io (https://jan-schneider.itch.io/chest-and-coins) under Creative Commons Attribution 4.0 International, modified to only include the first animation frame
+
+Content/explosion_particle.png - created by Sogomn on OpenGameArt.org (https://opengameart.org/content/explosion-3) and released under public domain
+
+Content/smoke.png - created by KnoblePersona on OpenGameArt.org (https://opengameart.org/content/smoke-fire-animated-particle-16x16) and released under Creative Commoms - By 3.0

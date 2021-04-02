@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 using GameArchitectureExample.Collisions;
 using Microsoft.Xna.Framework.Audio;
+using GameArchitectureExample.ParticleSystem;
 
 namespace GameArchitectureExample.GamePlay
 {
@@ -56,6 +57,8 @@ namespace GameArchitectureExample.GamePlay
         private Vector2 position = new Vector2(300, 380);
 
         private BoundingRectangle bounds = new BoundingRectangle(300, 460, 38, 48);
+
+        private Vector2 bottomPosition => new Vector2(position.X + 20, position.Y + 48);
 
         /// <summary>
         /// The bounding volume of the player
@@ -131,7 +134,7 @@ namespace GameArchitectureExample.GamePlay
         /// Updates the sprite's position based on user input
         /// </summary>
         /// <param name="gameTime">The GameTime</param>
-        public void Update(GameTime gameTime, int screenWidth, List<PlatformSprite> platforms)
+        public void Update(GameTime gameTime, int screenWidth, List<PlatformSprite> platforms, DustParticleSystem dustParticles)
         {
             lastPos = position;
             float playerWidth = 40;
@@ -171,6 +174,7 @@ namespace GameArchitectureExample.GamePlay
             // Apply instantaneous acceleration impulse if on ground and up key is pressed
             if ((keyboardState.IsKeyDown(Keys.Up) || keyboardState.IsKeyDown(Keys.W)) && (!IsInAir() || OnPlatform))
             {
+                dustParticles.PlaceDustCloud(bottomPosition);
                 speed.Y += -30000 * t;
                 jumpSound.Play(.2f, 0, 0);
             }
