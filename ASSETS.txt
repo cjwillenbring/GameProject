@@ -29,3 +29,5 @@ Content/Sabae-Sunrise.mp3 - created by Fabian Measures on FreeMusicArchive.org (
 Content/splash_sky.png - created by bevouliin.com on OpenGameArt.Org (https://opengameart.org/content/bevouliin-free-beach-game-background-for-game-developers) and released under public domain
 
 Content/particle.png created by Nathan Bean and released under public domain
+
+Content/coin.png - created by Jan Schneider on itch.io (https://jan-schneider.itch.io/chest-and-coins) under Creative Commons Attribution 4.0 International, modified to only include the first animation frame

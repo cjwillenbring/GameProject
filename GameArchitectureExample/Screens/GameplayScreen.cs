@@ -41,6 +41,7 @@ namespace GameArchitectureExample.Screens
 
         // Particle systems
         Dictionary<Bomb, PixieParticleSystem> _bombTrails = new Dictionary<Bomb, PixieParticleSystem>();
+        CoinParticleSystem _coinSploshion;
 
         // Fonts
         private SpriteFont bangers;
@@ -151,6 +152,9 @@ namespace GameArchitectureExample.Screens
             _zoom = 2f;
             _zooming = true;
 
+            _coinSploshion = new CoinParticleSystem(ScreenManager.Game, 25);
+            ScreenManager.Game.Components.Add(_coinSploshion);
+
             // once the load has finished, we use ResetElapsedTime to tell the game's
             // timing mechanism that we have just finished a very long frame, and that
             // it should not try to catch up.
@@ -232,8 +236,10 @@ namespace GameArchitectureExample.Screens
                         }
                         else if (item is Bomb)
                         {
-                            explosionSound.Play(.1f, 1, 0);
+                            explosionSound.Play(.2f, 1, 0);
                             currentScore -= 5;
+                            _coinSploshion.PlaceCoinSploshion(chestSprite.Position);
+                            chestSprite.ChestState = ChestState.Open;
                             if (currentScore < 0 && gameOverTimer == 0)
                             {
                                 _shaking = true;

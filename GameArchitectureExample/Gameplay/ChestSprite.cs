@@ -31,6 +31,8 @@ namespace GameArchitectureExample.GamePlay
         /// </summary>
         private Vector2 position = new Vector2(10, 420);
 
+        public Vector2 Position => new Vector2(position.X + 20, position.Y + 20);
+
         /// <summary>
         /// Holds the color of the player
         /// </summary>
