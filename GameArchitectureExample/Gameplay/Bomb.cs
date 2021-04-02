@@ -5,10 +5,11 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 using GameArchitectureExample.Collisions;
+using GameArchitectureExample.ParticleSystem;
 
 namespace GameArchitectureExample.GamePlay
 {
-    public class Bomb : FallingItem
+    public class Bomb : FallingItem, IParticleEmitter
     {
         /// <summary>
         /// Holds the acceleration for the bomb object
@@ -19,6 +20,10 @@ namespace GameArchitectureExample.GamePlay
         /// Stores the location of the enemy object on the sprite atlas
         /// </summary>
         private static Rectangle atlas_location = new Rectangle(0, 145, 16, 16);
+
+        public Vector2 Velocity => speed;
+
+        public Vector2 EmmitterPosition => new Vector2(position.X - 15, position.Y - 15);
 
         public Bomb() : base((float)2.5)
         {

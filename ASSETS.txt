@@ -27,3 +27,5 @@ Conten/Bomb_Coin.wave && Content/Jump.wav && Content/Explosion.wav && Content/Pi
 Content/Sabae-Sunrise.mp3 - created by Fabian Measures on FreeMusicArchive.org (https://freemusicarchive.org/music/Fabian_Measures/Singles_Album/Sabae_Sunrise) and released under Creative Commons Attribution 4.0 International
 
 Content/splash_sky.png - created by bevouliin.com on OpenGameArt.Org (https://opengameart.org/content/bevouliin-free-beach-game-background-for-game-developers) and released under public domain
+
+Content/particle.png created by Nathan Bean and released under public domain

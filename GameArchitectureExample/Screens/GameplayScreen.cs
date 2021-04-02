@@ -8,6 +8,7 @@ using GameArchitectureExample.StateManagement;
 using GameArchitectureExample.GamePlay;
 using Microsoft.Xna.Framework.Audio;
 using System.Collections.Generic;
+using GameArchitectureExample.ParticleSystem;
 
 namespace GameArchitectureExample.Screens
 {
@@ -37,6 +38,9 @@ namespace GameArchitectureExample.Screens
         private SoundEffect coinPickupSound;
         private SoundEffect bombCoinPickupSound;
         private SoundEffect explosionSound;
+
+        // Particle systems
+        Dictionary<Bomb, PixieParticleSystem> _bombTrails = new Dictionary<Bomb, PixieParticleSystem>();
 
         // Fonts
         private SpriteFont bangers;
@@ -103,6 +107,11 @@ namespace GameArchitectureExample.Screens
             countdownTimer = 60;
             currentScore = 0;
             fallingItems = new List<FallingItem>() { };
+            foreach(Bomb b in _bombTrails.Keys)
+            {
+                ScreenManager.Game.Components.Remove(_bombTrails[b]);
+            }
+            _bombTrails = new Dictionary<Bomb, PixieParticleSystem>();
             gameOverTimer = 0;
             player.GameOver = false;
             player.Reset();
@@ -141,6 +150,7 @@ namespace GameArchitectureExample.Screens
 
             _zoom = 2f;
             _zooming = true;
+
             // once the load has finished, we use ResetElapsedTime to tell the game's
             // timing mechanism that we have just finished a very long frame, and that
             // it should not try to catch up.
@@ -172,7 +182,14 @@ namespace GameArchitectureExample.Screens
 
             if (IsActive)
             {
-                if (random.NextDouble() > .975 && gameOverTimer == 0) fallingItems.Add(new Bomb());
+                if (random.NextDouble() > .975 && gameOverTimer == 0)
+                {
+                    Bomb newBomb = new Bomb();
+                    PixieParticleSystem newP = new PixieParticleSystem(ScreenManager.Game, newBomb);
+                    ScreenManager.Game.Components.Add(newP);
+                    _bombTrails.Add(newBomb, newP);
+                    fallingItems.Add(newBomb);
+                }
                 if (random.NextDouble() > .975 && gameOverTimer == 0) fallingItems.Add(new Coin());
                 double t = gameTime.ElapsedGameTime.TotalSeconds;
                 if (gameOverTimer == 0) countdownTimer -= t;
@@ -232,7 +249,17 @@ namespace GameArchitectureExample.Screens
 
                 // Remove the items that have clipped through the bottom of the game
                 foreach (var item in toRemove)
+                {
                     fallingItems.Remove(item);
+                    if (item is Bomb b)
+                    {
+                        if (_bombTrails.ContainsKey(b))
+                        {
+                            ScreenManager.Game.Components.Remove(_bombTrails[b]);
+                            _bombTrails.Remove(b);
+                        }
+                    }
+                }
             }
         }
 
