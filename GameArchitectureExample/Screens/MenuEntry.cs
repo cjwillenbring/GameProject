@@ -53,7 +53,7 @@ namespace GameArchitectureExample.Screens
 
 
         // This can be overridden to customize the appearance.
-        public virtual void Draw(MenuScreen screen, bool isSelected, GameTime gameTime)
+        public virtual void Draw(MenuScreen screen, bool isSelected, GameTime gameTime, SpriteFont font)
         {
             var color = isSelected ? Color.SaddleBrown : Color.Black;
 
@@ -68,7 +68,6 @@ namespace GameArchitectureExample.Screens
             // Draw text, centered on the middle of each line.
             var screenManager = screen.ScreenManager;
             var spriteBatch = screenManager.SpriteBatch;
-            var font = screenManager.Font;
 
             var origin = new Vector2(0, font.LineSpacing / 2);
 
@@ -81,9 +80,9 @@ namespace GameArchitectureExample.Screens
             return screen.ScreenManager.Font.LineSpacing;
         }
 
-        public virtual int GetWidth(MenuScreen screen)
+        public virtual int GetWidth(MenuScreen screen, SpriteFont font)
         {
-            return (int)screen.ScreenManager.Font.MeasureString(Text).X;
+            return (int)font.MeasureString(Text).X;
         }
     }
 }

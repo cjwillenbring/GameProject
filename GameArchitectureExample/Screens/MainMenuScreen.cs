@@ -12,16 +12,19 @@ namespace GameArchitectureExample.Screens
         public MainMenuScreen() : base("Main Menu")
         {
             var playGameMenuEntry = new MenuEntry("Play Game");
+            var howToPlay = new MenuEntry("How to Play");
             var optionsMenuEntry = new MenuEntry("Sound Settings");
             var exitMenuEntry = new MenuEntry("Restart Game"); 
             var quitMenuEntry = new MenuEntry("Quit");
 
             playGameMenuEntry.Selected += PlayGameMenuEntrySelected;
+            howToPlay.Selected += HowToPlayMenuEntrySelected;
             optionsMenuEntry.Selected += OptionsMenuEntrySelected;
             exitMenuEntry.Selected += OnCancel;
             quitMenuEntry.Selected += OnQuit;
 
             MenuEntries.Add(playGameMenuEntry);
+            MenuEntries.Add(howToPlay);
             MenuEntries.Add(optionsMenuEntry);
             MenuEntries.Add(exitMenuEntry);
             MenuEntries.Add(quitMenuEntry);
@@ -47,6 +50,11 @@ namespace GameArchitectureExample.Screens
         private void OptionsMenuEntrySelected(object sender, PlayerIndexEventArgs e)
         {
             ScreenManager.AddScreen(new SoundOptionsMenuScreen(), e.PlayerIndex);
+        }
+
+        private void HowToPlayMenuEntrySelected(object sender, PlayerIndexEventArgs e)
+        {
+            ScreenManager.AddScreen(new HowToPlayScreen(), e.PlayerIndex);
         }
 
         protected override void OnCancel(PlayerIndex playerIndex)

@@ -22,6 +22,9 @@ namespace GameArchitectureExample.Screens
         private readonly InputAction _menuSelect;
         private readonly InputAction _menuCancel;
 
+        private ContentManager _content;
+        private SpriteFont bangers;
+
         // Gets the list of menu entries, so derived classes can add or change the menu contents.
         protected IList<MenuEntry> MenuEntries => _menuEntries;
 
@@ -49,6 +52,10 @@ namespace GameArchitectureExample.Screens
 
         public override void Activate()
         {
+            if (_content == null)
+                _content = new ContentManager(ScreenManager.Game.Services, "Content");
+            bangers = _content.Load<SpriteFont>("bangers");
+
             base.Activate();
         }
 
@@ -116,7 +123,7 @@ namespace GameArchitectureExample.Screens
             foreach (var menuEntry in _menuEntries)
             {
                 // each entry is to be centered horizontally
-                position.X = ScreenManager.GraphicsDevice.Viewport.Width / 2 - menuEntry.GetWidth(this) / 2;
+                position.X = ScreenManager.GraphicsDevice.Viewport.Width / 2 - (menuEntry.GetWidth(this, bangers) / 2);
 
                 if (ScreenState == ScreenState.TransitionOn)
                     position.X -= transitionOffset * 256;
@@ -127,7 +134,7 @@ namespace GameArchitectureExample.Screens
                 menuEntry.Position = position;
 
                 // move down for the next entry the size of this entry
-                position.Y += menuEntry.GetHeight(this);
+                position.Y += menuEntry.GetHeight(this) + 10;
             }
         }
 
@@ -150,7 +157,6 @@ namespace GameArchitectureExample.Screens
 
             var graphics = ScreenManager.GraphicsDevice;
             var spriteBatch = ScreenManager.SpriteBatch;
-            var font = ScreenManager.Font;
 
             spriteBatch.Begin();
 
@@ -158,7 +164,7 @@ namespace GameArchitectureExample.Screens
             {
                 var menuEntry = _menuEntries[i];
                 bool isSelected = IsActive && i == _selectedEntry;
-                menuEntry.Draw(this, isSelected, gameTime);
+                menuEntry.Draw(this, isSelected, gameTime, bangers);
             }
 
             // Make the menu slide into place during transitions, using a
@@ -168,13 +174,13 @@ namespace GameArchitectureExample.Screens
 
             // Draw the menu title centered on the screen
             var titlePosition = new Vector2(graphics.Viewport.Width / 2, 80);
-            var titleOrigin = font.MeasureString(_menuTitle) / 2;
+            var titleOrigin = bangers.MeasureString(_menuTitle) / 2;
             var titleColor = new Color(192, 192, 192) * TransitionAlpha;
             const float titleScale = 1.25f;
 
             titlePosition.Y -= transitionOffset * 100;
 
-            spriteBatch.DrawString(font, _menuTitle, titlePosition, Color.Black,
+            spriteBatch.DrawString(bangers, _menuTitle, titlePosition, Color.Black,
                 0, titleOrigin, titleScale, SpriteEffects.None, 0);
 
             spriteBatch.End();

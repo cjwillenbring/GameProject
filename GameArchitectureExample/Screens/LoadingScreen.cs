@@ -20,6 +20,7 @@ namespace GameArchitectureExample.Screens
     //   screen will be the only thing displayed while this load is taking place.
     public class LoadingScreen : GameScreen
     {
+        private SpriteFont font;
         private readonly bool _loadingIsSlow;
         private bool _otherScreensAreGone;
         private readonly GameScreen[] _screensToLoad;
@@ -37,6 +38,7 @@ namespace GameArchitectureExample.Screens
         public override void Activate()
         {
             _background = new ContentManager(ScreenManager.Game.Services, "Content").Load<Texture2D>("splash_sky");
+            font = new ContentManager(ScreenManager.Game.Services, "Content").Load<SpriteFont>("bangers");
             base.Activate();
         }
 
@@ -96,8 +98,6 @@ namespace GameArchitectureExample.Screens
             if (_loadingIsSlow)
             {
                 var spriteBatch = ScreenManager.SpriteBatch;
-                var font = ScreenManager.Font;
-
                 const string message = "Loading...";
 
                 // Center the text in the viewport.
