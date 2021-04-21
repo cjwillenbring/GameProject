@@ -9,8 +9,8 @@ namespace GameArchitectureExample.Screens
     // A popup message box screen, used to display "are you sure?" confirmation messages.
     public class MessageBoxScreen : GameScreen
     {
+        private SpriteFont bangers;
         private readonly string _message;
-        private Texture2D _gradientTexture;
         private readonly InputAction _menuSelect;
         private readonly InputAction _menuCancel;
 
@@ -21,8 +21,8 @@ namespace GameArchitectureExample.Screens
         // "A=ok, B=cancel" usage text prompt.
         public MessageBoxScreen(string message, bool includeUsageText = true)
         {
-            const string usageText = "\nA button, Space, Enter = ok" +
-                                     "\nB button, Backspace = cancel";
+            const string usageText = "\nSpace, Enter = ok" +
+                                     "\nBackspace, ESC = cancel";
 
             if (includeUsageText)
                 _message = message + usageText;
@@ -49,7 +49,7 @@ namespace GameArchitectureExample.Screens
         public override void Activate()
         {
             var content = ScreenManager.Game.Content;
-                _gradientTexture = content.Load<Texture2D>("gradient");
+            bangers = content.Load<SpriteFont>("bangers");
         }
 
         public override void HandleInput(GameTime gameTime, InputState input)
@@ -76,7 +76,7 @@ namespace GameArchitectureExample.Screens
         public override void Draw(GameTime gameTime)
         {
             var spriteBatch = ScreenManager.SpriteBatch;
-            var font = ScreenManager.Font;
+            var font = bangers;
 
             // Darken down any other screens that were drawn beneath the popup.
             ScreenManager.FadeBackBufferToBlack(TransitionAlpha * 2 / 3);
@@ -98,7 +98,6 @@ namespace GameArchitectureExample.Screens
 
             spriteBatch.Begin();
 
-            spriteBatch.Draw(_gradientTexture, backgroundRectangle, color);
             spriteBatch.DrawString(font, _message, textPosition, color);
 
             spriteBatch.End();

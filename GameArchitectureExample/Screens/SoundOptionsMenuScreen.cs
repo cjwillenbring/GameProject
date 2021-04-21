@@ -1,5 +1,8 @@
 ﻿using Microsoft.Xna.Framework.Media;
 using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Content;
 
 namespace GameArchitectureExample.Screens
 {
@@ -8,8 +11,11 @@ namespace GameArchitectureExample.Screens
     // in various hopefully useful ways.
     public class SoundOptionsMenuScreen : MenuScreen
     {
-        private readonly MenuEntry _currentMasterVolumeMenuEntry;
-        private readonly MenuEntry _currentMediaVolumeMenuEntry;
+        private SpriteFont bangers;
+        private SoundEffect coinPickupSound;
+
+        private string _currentMasterVolumeMenuEntry;
+        private string _currentMediaVolumeMenuEntry;
 
         private readonly MenuEntry _masterVolumeDownMenuEntry;
         private readonly MenuEntry _masterVolumeUpMenuEntry;
@@ -20,13 +26,13 @@ namespace GameArchitectureExample.Screens
         private static float _currentMediaVolumeSetting;
 
 
-        public SoundOptionsMenuScreen() : base("Options")
+        public SoundOptionsMenuScreen() : base("")
         {
             _currentMasterVolumeSetting = SoundEffect.MasterVolume;
             _currentMediaVolumeSetting = MediaPlayer.Volume;
 
-            _currentMasterVolumeMenuEntry = new MenuEntry(string.Empty);
-            _currentMediaVolumeMenuEntry = new MenuEntry(string.Empty);
+            _currentMasterVolumeMenuEntry = "";
+            _currentMediaVolumeMenuEntry = "";
 
             _masterVolumeDownMenuEntry = new MenuEntry(string.Empty);
             _masterVolumeUpMenuEntry = new MenuEntry(string.Empty);
@@ -43,8 +49,6 @@ namespace GameArchitectureExample.Screens
 
             back.Selected += OnCancel;
 
-            MenuEntries.Add(_currentMasterVolumeMenuEntry);
-            MenuEntries.Add(_currentMediaVolumeMenuEntry);
             MenuEntries.Add(_masterVolumeDownMenuEntry);
             MenuEntries.Add(_masterVolumeUpMenuEntry);
             MenuEntries.Add(_mediaPlayerVolumeDownMenuEntry);
@@ -58,13 +62,35 @@ namespace GameArchitectureExample.Screens
             MenuEntries.Add(back);
         }
 
+        public override void Activate()
+        {
+            bangers = new ContentManager(ScreenManager.Game.Services, "Content").Load<SpriteFont>("bangers");
+            coinPickupSound = new ContentManager(ScreenManager.Game.Services, "Content").Load<SoundEffect>("Pickup_Coin");
+
+            base.Activate();
+        }
+
+        public override void Draw(GameTime gameTime)
+        {
+            var spriteBatch = ScreenManager.SpriteBatch;
+            spriteBatch.Begin();
+            // Render text, measure widths first to get more precise placement
+            var masterX = ScreenManager.GraphicsDevice.Viewport.Width / 2 - (bangers.MeasureString(_currentMasterVolumeMenuEntry).X / 2);
+            var mediaX = ScreenManager.GraphicsDevice.Viewport.Width / 2 - (bangers.MeasureString(_currentMediaVolumeMenuEntry).X / 2);
+
+            spriteBatch.DrawString(bangers, _currentMasterVolumeMenuEntry, new Vector2(masterX, 20), Color.Black, 0, new Vector2(0, 0), 1f, SpriteEffects.None, 0);
+            spriteBatch.DrawString(bangers, _currentMediaVolumeMenuEntry, new Vector2(mediaX, 60), Color.Black, 0, new Vector2(0, 0), 1f, SpriteEffects.None, 0);
+            spriteBatch.End();
+            base.Draw(gameTime);
+        }
+
         // Fills in the latest values for the options screen menu text.
         private void SetMenuEntryText()
         {
             SoundEffect.MasterVolume = _currentMasterVolumeSetting;
             MediaPlayer.Volume = _currentMediaVolumeSetting;
-            _currentMasterVolumeMenuEntry.Text = $"Sound Effet Volume : {_currentMasterVolumeSetting.ToString("f2")}";
-            _currentMediaVolumeMenuEntry.Text = $"Music Volume : {_currentMediaVolumeSetting.ToString("f2")}";
+            _currentMasterVolumeMenuEntry = $"Sound Effect Volume : {_currentMasterVolumeSetting.ToString("f2")}";
+            _currentMediaVolumeMenuEntry = $"Music Volume : {_currentMediaVolumeSetting.ToString("f2")}";
         }
 
         private void MasterVolumeUpMenuEntrySelected(object sender, PlayerIndexEventArgs e)
@@ -72,7 +98,7 @@ namespace GameArchitectureExample.Screens
             if (_currentMasterVolumeSetting == 1) _currentMasterVolumeSetting = 1;
             else if (_currentMasterVolumeSetting + .05f >= 1) _currentMasterVolumeSetting = 1;
             else _currentMasterVolumeSetting += .05f;
-
+            coinPickupSound.Play();
             SetMenuEntryText();
         }
 
@@ -90,7 +116,7 @@ namespace GameArchitectureExample.Screens
             if (_currentMasterVolumeSetting == 0) _currentMasterVolumeSetting = 0;
             else if (_currentMasterVolumeSetting - .05f <= 0) _currentMasterVolumeSetting = 0;
             else _currentMasterVolumeSetting -= .05f;
-
+            coinPickupSound.Play();
             SetMenuEntryText();
         }
 

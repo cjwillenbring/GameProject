@@ -13,6 +13,7 @@ namespace GameArchitectureExample.Screens
     // move up and down to select an entry, or cancel to back out of the screen.
     public abstract class MenuScreen : GameScreen
     {
+        private Color titleColor = Color.Black;
         private readonly List<MenuEntry> _menuEntries = new List<MenuEntry>();
         private int _selectedEntry;
         private readonly string _menuTitle;
@@ -24,6 +25,12 @@ namespace GameArchitectureExample.Screens
 
         private ContentManager _content;
         private SpriteFont bangers;
+
+        public Color TitleColor
+        {
+            get => titleColor;
+            set => titleColor = value;
+        }
 
         // Gets the list of menu entries, so derived classes can add or change the menu contents.
         protected IList<MenuEntry> MenuEntries => _menuEntries;
@@ -180,7 +187,7 @@ namespace GameArchitectureExample.Screens
 
             titlePosition.Y -= transitionOffset * 100;
 
-            spriteBatch.DrawString(bangers, _menuTitle, titlePosition, Color.Black,
+            spriteBatch.DrawString(bangers, _menuTitle, titlePosition, TitleColor,
                 0, titleOrigin, titleScale, SpriteEffects.None, 0);
 
             spriteBatch.End();

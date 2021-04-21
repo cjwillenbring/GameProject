@@ -1,4 +1,5 @@
 ﻿using GameArchitectureExample.StateManagement;
+using Microsoft.Xna.Framework;
 
 namespace GameArchitectureExample.Screens
 {
@@ -8,8 +9,11 @@ namespace GameArchitectureExample.Screens
     {
         public PauseMenuScreen() : base("Paused")
         {
+            TitleColor = Color.White;
             var resumeGameMenuEntry = new MenuEntry("Resume Game");
             var quitGameMenuEntry = new MenuEntry("Quit To Main Menu");
+            resumeGameMenuEntry.NonSelectedColor = Color.White;
+            quitGameMenuEntry.NonSelectedColor = Color.White;
 
             resumeGameMenuEntry.Selected += OnCancel;
             quitGameMenuEntry.Selected += QuitGameMenuEntrySelected;
@@ -20,7 +24,7 @@ namespace GameArchitectureExample.Screens
 
         private void QuitGameMenuEntrySelected(object sender, PlayerIndexEventArgs e)
         {
-            const string message = "Are you sure you want to quit to the main menu?";
+            const string message = "Are you sure you want to quit?";
             var confirmQuitMessageBox = new MessageBoxScreen(message);
 
             confirmQuitMessageBox.Accepted += ConfirmQuitMessageBoxAccepted;

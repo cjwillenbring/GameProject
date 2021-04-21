@@ -11,6 +11,9 @@ namespace GameArchitectureExample.Screens
     // when the menu entry is selected.
     public class MenuEntry
     {
+        private Color selectedColor = Color.SaddleBrown;
+        private Color nonSelectedColor = Color.Black;
+
         private string _text;
         private float _selectionFade;    // Entries transition out of the selection effect when they are deselected
         private Vector2 _position;    // This is set by the MenuScreen each frame in Update
@@ -25,6 +28,18 @@ namespace GameArchitectureExample.Screens
         {
             get => _position;
             set => _position = value;
+        }
+
+        public Color SelectedColor
+        {
+            get => selectedColor;
+            set => selectedColor = value;
+        }
+
+        public Color NonSelectedColor
+        {
+            get => nonSelectedColor;
+            set => nonSelectedColor = value;
         }
 
         public event EventHandler<PlayerIndexEventArgs> Selected;
@@ -55,7 +70,7 @@ namespace GameArchitectureExample.Screens
         // This can be overridden to customize the appearance.
         public virtual void Draw(MenuScreen screen, bool isSelected, GameTime gameTime, SpriteFont font)
         {
-            var color = isSelected ? Color.SaddleBrown : Color.Black;
+            var color = isSelected ? SelectedColor : NonSelectedColor;
 
             // Pulsate the size of the selected menu entry.
             double time = gameTime.TotalGameTime.TotalSeconds;
