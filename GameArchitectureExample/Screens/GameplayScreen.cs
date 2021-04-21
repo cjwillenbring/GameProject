@@ -53,6 +53,7 @@ namespace GameArchitectureExample.Screens
         private int currentScore;
         private double countdownTimer;
         private double gameOverTimer;
+        private double gameWonTimer;
 
         // Matrix transforms
         private bool _shaking;
@@ -83,6 +84,7 @@ namespace GameArchitectureExample.Screens
             currentScore = 0;
             countdownTimer = 60;
             gameOverTimer = 0;
+            gameWonTimer = 0;
 
             // initialize the falling items list
             fallingItems = new List<FallingItem>() { };
@@ -116,6 +118,7 @@ namespace GameArchitectureExample.Screens
             }
             _bombTrails = new Dictionary<Bomb, PixieParticleSystem>();
             gameOverTimer = 0;
+            gameWonTimer = 0;
             player.GameOver = false;
             player.Reset();
         }
@@ -194,6 +197,18 @@ namespace GameArchitectureExample.Screens
 
             if (IsActive)
             {
+                double t = gameTime.ElapsedGameTime.TotalSeconds;
+                if (gameOverTimer == 0 && gameWonTimer == 0) countdownTimer -= t;
+                if (gameOverTimer > 0) gameOverTimer -= t;
+                else if (gameOverTimer < 0) Reset();
+                if (countdownTimer < 0 && gameWonTimer == 0) gameWonTimer = 2;
+                if (gameWonTimer > 0)
+                {
+                    gameWonTimer -= t;
+                    return;
+                }
+                else if (gameWonTimer < 0) Reset();
+
                 if (random.NextDouble() > .975 && gameOverTimer == 0)
                 {
                     Bomb newBomb = new Bomb();
@@ -203,11 +218,6 @@ namespace GameArchitectureExample.Screens
                     fallingItems.Add(newBomb);
                 }
                 if (random.NextDouble() > .975 && gameOverTimer == 0) fallingItems.Add(new Coin());
-                double t = gameTime.ElapsedGameTime.TotalSeconds;
-                if (gameOverTimer == 0) countdownTimer -= t;
-                if (gameOverTimer > 0) gameOverTimer -= t;
-                else if (gameOverTimer < 0) Reset();
-                if (countdownTimer < 0) Reset();
 
                 // TODO: Add your update logic here
                 player.Update(gameTime, ScreenManager.GraphicsDevice.Viewport.Width, platforms, _dusts);
@@ -254,7 +264,7 @@ namespace GameArchitectureExample.Screens
                                 _shaking = true;
                                 _shakeTime = 0;
                                 explosionSound.Play(.3f, 0, 0);
-                                gameOverTimer = 1.2;
+                                gameOverTimer = 1.5;
                                 player.GameOver = true;
                                 foreach (var f in fallingItems) toRemove.Add(f);
                             }
@@ -358,10 +368,24 @@ namespace GameArchitectureExample.Screens
             Vector2 widthScore = bangers.MeasureString($"Current Score : {currentScore}");
             Vector2 widthBest = bangers.MeasureString($"Best : {best}");
             Vector2 widthPause = bangers.MeasureString($"Press Esc to Pause");
-            spriteBatch.DrawString(bangers, $"Time Left : {countdownTimer:F}", new Vector2(5, 5), Color.Black);
+            spriteBatch.DrawString(bangers, $"Time Left : {Math.Abs(countdownTimer):F}", new Vector2(5, 5), Color.Black);
             spriteBatch.DrawString(bangers, $"Current Score : {Math.Max(currentScore, 0)}", new Vector2(800 - (widthScore.X + 5), 5), Color.Black);
             spriteBatch.DrawString(bangers, $"Best : {best}", new Vector2(800 - (widthBest.X + 5), 45), Color.Black);
             spriteBatch.DrawString(bangers, $"Press Esc to Pause", new Vector2(800 - (widthPause.X + 5), 430), Color.White);
+            spriteBatch.DrawString(bangers, $"Avoid the Bombs and collect as many \ncoins as possible before time runs out!", new Vector2(100, 435), Color.White, 0, new Vector2(0, 0), .4f, SpriteEffects.None, 0);
+
+            if (gameWonTimer > 0)
+            {
+                Vector2 youWonWidth = bangers.MeasureString("YOU WIN");
+                spriteBatch.DrawString(bangers, "YOU WIN", new Vector2(120, 120), Color.Goldenrod, 0, new Vector2(0,0), 4f, SpriteEffects.None, 0);
+            }
+
+            if (gameOverTimer > 0)
+            {
+                Vector2 youWonWidth = bangers.MeasureString("YOU LOSE");
+                spriteBatch.DrawString(bangers, "YOU LOSE", new Vector2(120, 120), Color.Red, 0, new Vector2(0, 0), 4f, SpriteEffects.None, 0);
+            }
+
             spriteBatch.End();
 
 

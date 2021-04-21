@@ -9,10 +9,10 @@ namespace GameArchitectureExample.Screens
     {
         private string InstructionsText = "- You have 60 seconds to avoid the bombs \n    and collect as many coins as you can\n" +
                 "- If you hit a bomb, your coins decrease by 5.\n- If your coins go below zero, you die and the game is over.\n" +
-                "- Otherwise, the game will restart \n    upon reaching the 60 seconds\n\n- This game has fairly basic mechanics outlined below";
-        private string jumpText = "- To jump, press the up arrow or the W key";
-        private string moveText = "- To move laterally, press the side arrow keys of the D and A keys";
-        private string tipsText = "- The game allows you to warp through the wall to the other side\n    Use this to your advantage to avoid the bombs";
+                "- Otherwise, the game will restart \n    upon reaching the 60 seconds\n" +
+                "- To jump, press the up arrow or the W key\n" +
+                "- To move laterally, press the side arrow keys of the D and A keys\n" +
+                "- The game allows you to warp through the wall to the other side\n    Use this to your advantage to avoid the bombs";
 
         private ContentManager _content;
         private SpriteFont bangers;
@@ -40,10 +40,7 @@ namespace GameArchitectureExample.Screens
             var spriteBatch = ScreenManager.SpriteBatch;
             spriteBatch.Begin();
             // Render text, measure widths first to get more precise placement
-            spriteBatch.DrawString(bangers, InstructionsText, new Vector2(10, 10), Color.Black, 0, new Vector2(0,0), .5f, SpriteEffects.None, 0);
-            spriteBatch.DrawString(bangers, jumpText, new Vector2(10, 220), Color.Black, 0, new Vector2(0, 0), .5f, SpriteEffects.None, 0);
-            spriteBatch.DrawString(bangers, moveText, new Vector2(10, 260), Color.Black, 0, new Vector2(0, 0), .5f, SpriteEffects.None, 0);
-            spriteBatch.DrawString(bangers, tipsText, new Vector2(10, 300), Color.Black, 0, new Vector2(0, 0), .5f, SpriteEffects.None, 0);
+            spriteBatch.DrawString(bangers, InstructionsText, new Vector2(10, 10), Color.Black, 0, new Vector2(0,0), .6f, SpriteEffects.None, 0);
             spriteBatch.End();
             base.Draw(gameTime);
         }
