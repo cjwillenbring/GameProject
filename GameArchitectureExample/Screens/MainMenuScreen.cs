@@ -14,19 +14,16 @@ namespace GameArchitectureExample.Screens
             var playGameMenuEntry = new MenuEntry("Play Game");
             var howToPlay = new MenuEntry("How to Play");
             var optionsMenuEntry = new MenuEntry("Sound Settings");
-            var exitMenuEntry = new MenuEntry("Restart Game"); 
             var quitMenuEntry = new MenuEntry("Quit");
 
             playGameMenuEntry.Selected += PlayGameMenuEntrySelected;
             howToPlay.Selected += HowToPlayMenuEntrySelected;
             optionsMenuEntry.Selected += OptionsMenuEntrySelected;
-            exitMenuEntry.Selected += OnCancel;
             quitMenuEntry.Selected += OnQuit;
 
             MenuEntries.Add(playGameMenuEntry);
             MenuEntries.Add(howToPlay);
             MenuEntries.Add(optionsMenuEntry);
-            MenuEntries.Add(exitMenuEntry);
             MenuEntries.Add(quitMenuEntry);
         }
 
