@@ -12,7 +12,7 @@ namespace GameArchitectureExample.Screens
     public class MainMenuScreen : MenuScreen
     {
         private Difficulty difficultyProxy;
-        public MainMenuScreen() : base("Main Menu")
+        public MainMenuScreen() : base("Coins and Bombs")
         {
             var playGameMenuEntry = new MenuEntry("Play Game");
             var changeDifficulty = new MenuEntry("Adjust Difficulty");
