@@ -12,7 +12,8 @@ namespace GameArchitectureExample.Screens
                 "- Otherwise, the game will restart \n    upon reaching the 60 seconds\n" +
                 "- To jump, press the up arrow or the W key\n" +
                 "- To move laterally, press the side arrow keys of the D and A keys\n" +
-                "- The game allows you to warp through the wall to the other side\n    Use this to your advantage to avoid the bombs";
+                "- The game allows you to warp through the wall to the other side\n    Use this to your advantage to avoid the bombs\n" +
+                "- Change the difficulty to change how often bombs spawn";
 
         private ContentManager _content;
         private SpriteFont bangers;

@@ -12,11 +12,25 @@ using GameArchitectureExample.ParticleSystem;
 
 namespace GameArchitectureExample.Screens
 {
+    public enum Difficulty
+    {
+        Easy = 0,
+        Medium = 1,
+        Hard = 2
+    }
     // This screen implements the actual game logic. It is just a
     // placeholder to get the idea across: you'll probably want to
     // put some more interesting gameplay in here!
     public class GameplayScreen : GameScreen
     {
+        // Difficulty setting
+        private Difficulty difficulty;
+        public Difficulty Difficulty
+        {
+            get => difficulty;
+            set => difficulty = value;
+        }
+
         private ContentManager _content;
 
         // Player Sprites
@@ -67,8 +81,9 @@ namespace GameArchitectureExample.Screens
         private float _pauseAlpha;
         private readonly InputAction _pauseAction;
 
-        public GameplayScreen()
+        public GameplayScreen(Difficulty difficulty)
         {
+            this.difficulty = difficulty;
             TransitionOnTime = TimeSpan.FromSeconds(1.5);
             TransitionOffTime = TimeSpan.FromSeconds(0.5);
 
@@ -183,6 +198,21 @@ namespace GameArchitectureExample.Screens
             _content.Unload();
         }
 
+        private double GetDifficultyNum()
+        {
+            switch(difficulty)
+            {
+                case Difficulty.Easy:
+                    return .985;
+                case Difficulty.Medium:
+                    return .975;
+                case Difficulty.Hard:
+                    return .96;
+                default:
+                    return .975;
+            }
+        }
+
         // This method checks the GameScreen.IsActive property, so the game will
         // stop updating when the pause menu is active, or if you tab away to a different application.
         public override void Update(GameTime gameTime, bool otherScreenHasFocus, bool coveredByOtherScreen)
@@ -209,7 +239,7 @@ namespace GameArchitectureExample.Screens
                 }
                 else if (gameWonTimer < 0) Reset();
 
-                if (random.NextDouble() > .975 && gameOverTimer == 0)
+                if (random.NextDouble() > GetDifficultyNum() && gameOverTimer == 0)
                 {
                     Bomb newBomb = new Bomb();
                     PixieParticleSystem newP = new PixieParticleSystem(ScreenManager.Game, newBomb);
